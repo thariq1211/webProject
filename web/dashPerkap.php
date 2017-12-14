@@ -1,3 +1,18 @@
+<?php
+session_start();
+include 'koneksi.php';
+include 'model.php';
+$db = new model;
+//cek apakah user sudah login
+if (!isset($_SESSION['userid'])){
+    header("location:login.php");
+}
+
+//cek level user
+if ($_SESSION['level']!="perkap"){
+    die("Anda bukan petugas perlengkapan");
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,10 +43,10 @@
 <body>
 <nav class="navbar navbar-default" style="margin-bottom: 1px">
     <div class="navbar-header">
-        <a class="navbar-brand" href="#">LRMS</a>
+        <a class="navbar-brand" href="index.php">LRMS</a>
     </div>
     <ul class="nav navbar-nav navbar-collapse navbar-right">
-        <li class="active"><a href="index.php ">Logout <span class="glyphicon glyphicon-off"></span></a></li>
+        <li class="active"><a href="logout.php">Logout <span class="glyphicon glyphicon-off"></span></a></li>
     </ul>
 </nav>
 <div class="container-fluid">
@@ -40,10 +55,11 @@
 <!--            <h2><span class="glyphicon glyphicon-home center-block" style="margin-left: 4%"></span></h2>-->
             <ul class="nav nav-pills nav-stacked">
                 <li class="active"><a data-toggle="tab" href="#dash">Dashboard</a></li>
-                <li><a data-toggle="tab" href="#ruangan">Data Ruangan</a></li>
+                <!-- <li><a data-toggle="tab" href="#ruangan">Data Ruangan</a></li> -->
                 <li><a data-toggle="tab" href="#peralatan">Data Peralatan</a></li>
                 <li><a data-toggle="tab" href="#validasi">Validasi Perlengkapan</a></li>
                 <li><a data-toggle="tab" href="#ijin">Ijin Kegiatan</a></li>
+                <li><a data-toggle="tab" href="#Detailijin">Detail Ijin Kegiatan</a></li>
             </ul><br>
         </div>
         <br>
@@ -56,7 +72,7 @@
             </div>
         </div>
     </div>
-    <div id="ruangan" class="tab-pane fade">
+    <!-- <div id="ruangan" class="tab-pane fade">
         <div class="col-sm-9">
             <div class="row">
                 <div class="col-sm-4">
@@ -91,7 +107,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <div id="peralatan" class="tab-pane fade">
         <div class="col-sm-9">
             <div class="row">
@@ -101,55 +117,27 @@
                             <thead>
                             <tr>
                                 <th>No</th>
+                                <th>ID Kegiatan</th>
+                                <th>Nama Kegiatan</th>
                                 <th>Nama Barang</th>
-                                <th>Spesifikasi / Merk</th>
                                 <th>Jumlah</th>
                                 <th>Keterangan</th>
                             </tr>
                             </thead>
                             <tbody>
+                                <?php 
+                                    $no = 1;
+                                    foreach ($db->tampilDataPerlengkapan() as $data) { 
+                                 ?>
                             <tr>
-                                <td>1.</td>
-                                <td>Sound System</td>
-                                <td>Yamaha</td>
-                                <td>2 Set</td>
-                                <td>Baik</td>
+                                <td><?php echo $no++; ?>.</td>
+                                <td><?php echo $data['id_kegiatan']; ?></td>
+                                <td><?php echo $data['nama_kegiatan']; ?></td>
+                                <td><?php echo $data['nama_barang']; ?></td>
+                                <td><?php echo $data['jumlah']; ?></td>
+                                <td><?php echo $data['keterangan']; ?></td>
                             </tr>
-                            <tr>
-                                <td>2.</td>
-                                <td>Mic Wireless</td>
-                                <td>Shure</td>
-                                <td>2 Set</td>
-                                <td>Baik</td>
-                            </tr>
-                            <tr>
-                                <td>3.</td>
-                                <td>Mic Kabel</td>
-                                <td>Shure</td>
-                                <td>6 Biji</td>
-                                <td>Baik</td>
-                            </tr>
-                            <tr>
-                                <td>4.</td>
-                                <td>Mixer</td>
-                                <td>Yamaha</td>
-                                <td>3 biji</td>
-                                <td>Baik</td>
-                            </tr>
-                            <tr>
-                                <td>5.</td>
-                                <td>Kabel Roll</td>
-                                <td> - </td>
-                                <td>6 Biji</td>
-                                <td>Baik</td>
-                            </tr>
-                            <tr>
-                                <td>6.</td>
-                                <td>Proyektor</td>
-                                <td>Epson</td>
-                                <td>8 Biji</td>
-                                <td>Baik</td>
-                            </tr>
+                            <?php } ?>
                             </tbody>
                         </table>
                     </div>
@@ -167,61 +155,33 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama Kegiatan</th>
-                                <th>Tanggal Pelaksanaan</th>
-                                <th>Ruangan yang dipinjam</th>
-                                <th>Status Validasi</th>
+                                <th>Nama Barang</th>
+                                <th>Jumlah</th>
+                                <th>Keterangan</th>
+                                <th>Status</th>
+                                <th style="text-align: center">Aksi</th>
                             </tr>
                             </thead>
                             <tbody>
+                                <?php 
+                                    $no = 1;
+                                    foreach ($db->tampilDataPerlengkapan() as $data) {
+                                 ?>
                             <tr>
-                                <td>1.</td>
-                                <td>Pemilu BEM</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Disetujui</td>
+                                <td><?php echo $no++ ?></td>
+                                <td><?php echo $data['nama_kegiatan']; ?></td>
+                                <td><?php echo $data['nama_barang']; ?></td>
+                                <td><?php echo $data['jumlah']; ?></td>
+                                <td><?php echo $data['keterangan']; ?></td>
+                                <td><?php echo $data['status']; ?></td>
+                                <td style="text-align: center">
+                                    <a href="perkap.php?id=<?php echo $data['id_perkap'];?>&aksi=setuju" class="btn btn-primary btn-xs" <?php if ($data['status']!="Belum Disetujui"){echo "disabled";} ?>>
+                                        <span class="glyphicon glyphicon-ok"></span> Setujui</a>
+                                    <a href="perkap.php?id=<?php echo $data['id_perkap'];?>&aksi=tolak" class="btn btn-danger btn-xs" <?php if ($data['status']!="Belum Disetujui"){echo "disabled";} ?>>
+                                        <span class="glyphicon glyphicon-remove"></span> Tolak</a>
+                                </td>
                             </tr>
-                            <tr>
-                                <td>2.</td>
-                                <td>HTC</td>
-                                <td>2 Desember 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Belum Disetujui</td>
-                            </tr>
-                            <tr>
-                                <td>3.</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>31 November 2017</td>
-                                <td>Ruang 2</td>
-                                <td>Disetujui</td>
-                            </tr>
-                            <tr>
-                                <td>4.</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>30 November 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Disetujui</td>
-                            </tr>
-                            <tr>
-                                <td>5.</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>30 November 2017</td>
-                                <td>Ruang 2</td>
-                                <td>Belum Disetujui</td>
-                            </tr>
-                            <tr>
-                                <td>6.</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>30 November 2017</td>
-                                <td>Ruang 5</td>
-                                <td>Disetujui</td>
-                            </tr>
-                            <tr>
-                                <td>7.</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>30 November 2017</td>
-                                <td>Ruang 4</td>
-                                <td>Belum Disetujui</td>
-                            </tr>
+                            <?php } ?>
                             </tbody>
                         </table>
                     </div>
@@ -234,46 +194,85 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="well">
+
+                        <table class="table table-condensed">
+                            <thead>
+                            <tr>
+                                <th>No Kegiatan</th>
+                                <th>Nama Kegiatan</th>
+                                <th>Tanggal</th>
+                                <th>Ruangan</th>
+                                <th style="text-align: center">Aksi</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                    foreach ($db->tampilDataKegiatanFIX() as $data) { 
+                                 ?>
+                            <tr>
+                                <td><?php echo strtoupper($data['no_kegiatan']); ?></td>
+                                <td><?php echo $data['nama_kegiatan']; ?></td>
+                                <td><?php echo $data['tanggal']; ?></td>
+                                <td><?php echo $data['ruangan']; ?></td>
+                                <td style="text-align: center">
+                                    <a href="#" class="edit-record btn btn-primary btn-xs" data-id="<?php echo $data['id_kegiatan']?>"><span class="glyphicon glyphicon-plus"></span> Add Ijin</a>
+                                </td>
+                            </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Tambah Data Ijin Kegiatan</h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="Detailijin" class="tab-pane fade">
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="well">
                         <table class="table table-condensed">
                             <thead>
                             <tr>
                                 <th>No Surat</th>
-                                <th>Tanggal</th>
                                 <th>Nama Kegiatan</th>
-                                <th>Waktu</th>
+                                <th>Tanggal Pelaksanaan</th>
+                                <th>Waktu Start</th>
+                                <th>Waktu Finish</th>
                                 <th>Ijin Tempat Nomor</th>
                                 <th>Peserta</th>
                                 <th>Penanggung Jawab</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>15 September 2017</td>
-                                <td>Pelatihan Laravel</td>
-                                <td>18.00-21.00</td>
-                                <td>1537/UN25.1.15/LK/2017</td>
-                                <td>Anggota UKM</td>
-                                <td>Ketua UKM</td>
-                            </tr>
-                            <tr>
-                                <td>16/BEM/d/PSSI/IX/2017</td>
-                                <td>15 November 2017</td>
-                                <td>Pemilu BEM</td>
-                                <td>15.00-18.00</td>
-                                <td>1567/UN25.1.17/LK/2017</td>
-                                <td>Mahasiswa Ilkom</td>
-                                <td>Panitia VOC</td>
-                            </tr>
-                            <tr>
-                                <td>16/HIMASIF/d/PSSI/IX/2017</td>
-                                <td>25 November 2017</td>
-                                <td>HTC</td>
-                                <td>16.00-20.00</td>
-                                <td>1569/UN25.1.17/LK/2017</td>
-                                <td>Mahasiswa Ilkom</td>
-                                <td>Panitia HTC</td>
-                            </tr>
+                            <?php
+                            foreach ($db->tampilIjin() as $data) {
+                                ?>
+                                <tr>
+                                    <td><?php echo strtoupper($data['no_surat']) ; ?></td>
+                                    <td><?php echo strtoupper($data['nama_kegiatan']); ?></td>
+                                    <td><?php echo $data['tanggal']; ?></td>
+                                    <td><?php echo $data['waktu_awal']; ?></td>
+                                    <td><?php echo $data['waktu_akhir']; ?></td>
+                                    <td><?php echo strtoupper($data['ijin_tempat_nomor']); ?></td>
+                                    <td><?php echo $data['peserta']; ?></td>
+                                    <td><?php echo $data['penanggung_jawab']; ?></td>
+                                </tr>
+                            <?php } ?>
                             </tbody>
                         </table>
                     </div>
@@ -283,7 +282,21 @@
     </div>
 </div>
     </div>
-</div>
-
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script language="javascript">
+        $(function(){
+            $(document).on('click','.edit-record',function(e){
+                e.preventDefault();
+                $("#myModal").modal('show');
+                $.post('form_tambah_ijin.php',
+                    {id:$(this).attr('data-id')},
+                    function(html){
+                        $(".modal-body").html(html);
+                    }
+                );
+            });
+        });
+    </script>
 </body>
 </html>

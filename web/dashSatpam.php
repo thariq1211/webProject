@@ -8,8 +8,8 @@ if (!isset($_SESSION['userid'])){
 }
 
 //cek level user
-if ($_SESSION['level']!="sekretaris2"){
-    die("Anda bukan Sekretaris 2");
+if ($_SESSION['level']!="satpam"){
+    die("Anda bukan Satpam");
 }
 ?>
 <!DOCTYPE html>
@@ -54,7 +54,7 @@ if ($_SESSION['level']!="sekretaris2"){
 <!--            <h2><span class="glyphicon glyphicon-home center-block" style="margin-left: 4%"></span></h2>-->
             <ul class="nav nav-pills nav-stacked">
                 <li class="active"><a data-toggle="tab" href="#dash">Dashboard</a></li>
-                <li><a data-toggle="tab" href="#valPeminjaman">Validasi Peminjaman</a></li>
+                <li><a data-toggle="tab" href="#perijinan">Perijinan Kegiatan</a></li>
             </ul><br>
         </div>
         <br>
@@ -63,11 +63,11 @@ if ($_SESSION['level']!="sekretaris2"){
         <div class="col-sm-9">
             <div class="well">
                 <h4>Dashboard</h4>
-                <p>Selamat datang Sekretaris 2</p>
+                <p>Selamat datang Petugas Security</p>
             </div>
         </div>
     </div>
-    <div id="valPeminjaman" class="tab-pane fade">
+    <div id="perijinan" class="tab-pane fade">
         <div class="col-sm-9">
             <div class="row">
                 <div class="col-sm-12">
@@ -75,32 +75,32 @@ if ($_SESSION['level']!="sekretaris2"){
                         <table class="table table-condensed">
                             <thead>
                             <tr>
-                                <th>No</th>
-                                <th>No Kegiatan</th>
+                                <th>No Surat</th>
                                 <th>Nama Kegiatan</th>
                                 <th>Tanggal Pelaksanaan</th>
-                                <th>Ruangan yang dipinjam</th>
-                                <th>Status</th>
+                                <th>Waktu Start</th>
+                                <th>Waktu Finish</th>
+                                <th>Ijin Tempat Nomor</th>
+                                <th>Peserta</th>
+                                <th>Penanggung Jawab</th>
                                 <th style="text-align: center">Aksi</th>
                             </tr>
                             </thead>
                             <tbody>
-                                <?php 
-                                    $no = 1;
-                                    foreach ($db->tampilDataKegiatans2() as $data) {
+                                <?php
+                                    foreach ($db->tampilIjin() as $data) {
                                  ?>
                             <tr>
-                                <td><?php echo $no++; ?></td>
-                                <td><?php echo strtoupper($data['no_kegiatan']) ; ?></td>
+                                <td><?php echo strtoupper($data['no_surat']) ; ?></td>
                                 <td><?php echo strtoupper($data['nama_kegiatan']); ?></td>
                                 <td><?php echo $data['tanggal']; ?></td>
-                                <td><?php echo $data['ruangan']; ?></td>
-                                <td><?php echo $data['status2']; ?></td>
-                                <td style="text-align: center">
-                                    <a href="Sekretaris2.php?id=<?php echo $data['id_kegiatan'];?>&aksi=setuju" class="btn btn-primary btn-xs" <?php if ($data['status2']!="Belum Disetujui"){echo "disabled";} ?>>
-                                        <span class="glyphicon glyphicon-ok"></span> Setujui</a>
-                                    <a href="Sekretaris2.php?id=<?php echo $data['id_kegiatan'];?>&aksi=tolak" class="btn btn-danger btn-xs" <?php if ($data['status2']!="Belum Disetujui"){echo "disabled";} ?>>
-                                        <span class="glyphicon glyphicon-remove"></span> Tolak</a>
+                                <td><?php echo $data['waktu_awal']; ?></td>
+                                <td><?php echo $data['waktu_akhir']; ?></td>
+                                <td><?php echo strtoupper($data['ijin_tempat_nomor']); ?></td>
+                                <td><?php echo $data['peserta']; ?></td>
+                                <td><?php echo $data['penanggung_jawab']; ?></td>
+                                <td>
+                                    <a href="#" class="detail-record btn btn-default btn-xs" data-id="<?php echo $data['id_kegiatan']?>"><span class="glyphicon glyphicon-eye-open"></span> Detail Kegiatan</a>
                                 </td>
                             </tr>
                             <?php } ?>
@@ -111,9 +111,36 @@ if ($_SESSION['level']!="sekretaris2"){
             </div>
         </div>
     </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Detail Kegiatan</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
     </div>
 </div>
-
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script language="javascript">
+    $(function(){
+        $(document).on('click','.detail-record',function(e){
+            e.preventDefault();
+            $("#myModal").modal('show');
+            $.post('detailKegiatan.php',
+                {id:$(this).attr('data-id')},
+                function(html){
+                    $(".modal-body").html(html);
+                }
+            );
+        });
+    });
+</script>
 </body>
 </html>

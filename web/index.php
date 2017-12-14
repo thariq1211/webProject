@@ -1,3 +1,10 @@
+<?php 
+session_start();
+include 'koneksi.php';
+include 'model.php';
+$db = new model;
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,10 +27,10 @@
                 <a class="navbar-brand" href="#">LRMS</a>
             </div>
             <ul class="nav navbar-nav navbar-collapse navbar-right">
-              <li><a href="#home ">Home</a></li>
+              <li class="active"><a href="#home ">Home</a></li>
               <li><a href="#layanan">Layanan</a></li>
               <li><a href="#kegiatan">Kegiatan</a></li>
-              <li><a href="#ruangan">Ruangan</a></li>
+              <!-- <li><a href="#ruangan">Ruangan</a></li> -->
               <li><a href="#sop">Standart Operasional Prosedur</a></li>
             </ul>
         </div>
@@ -32,7 +39,27 @@
         <div class="jumbotron text-center">
             <div class="container for-about">
                 <h1>Sistem Informasi Peminjaman Ruangan dan Perlengkapan Program Ilmu Komputer</h1>
-                <a href="login.php"><button type="button" class="btn btn-primary btn-lg"> Login <span class="glyphicon glyphicon-user"></span></button></a>
+                <?php
+                    if (!isset($_SESSION['userid'])){ ?>
+                       <a href="login.php"><button type="button" class="btn btn-primary btn-lg"> Login <span class="glyphicon glyphicon-user"></span></button></a>
+                    <?php }
+                    elseif ($_SESSION['level']=="perkap") { ?>
+                        <a href="dashPerkap.php"><button type="button" class="btn btn-primary btn-lg"> Perkap <span class="glyphicon glyphicon-user"></span></button></a>
+                    <?php }
+                    elseif ($_SESSION['level']=="mahasiswa") { ?>
+                        <a href="dashMahasiswa.php"><button type="button" class="btn btn-primary btn-lg"> <?php echo $_SESSION['nama_mhs'];?> <span class="glyphicon glyphicon-user"></span></button></a>
+                    <?php }
+                    elseif ($_SESSION['level']=="kasieperkap") { ?>
+                        <a href="dashKasiePerkap.php"><button type="button" class="btn btn-primary btn-lg"> Kasie Perkap <span class="glyphicon glyphicon-user"></span></button></a>
+                    <?php }
+                    elseif ($_SESSION['level']=="sekretaris2") { ?>
+                        <a href="dashSekretaris2.php"><button type="button" class="btn btn-primary btn-lg"> Sekretaris 2 <span class="glyphicon glyphicon-user"></span></button></a>
+                    <?php }
+                    elseif ($_SESSION['level']=="satpam") { ?>
+                        <a href="dashSatpam.php"><button type="button" class="btn btn-primary btn-lg"> Satpam <span class="glyphicon glyphicon-user"></span></button></a>
+                    <?php }
+                ?>
+                
             </div>
         </div>
     </div>
@@ -61,55 +88,28 @@
                         </tr>
                         </thead>
                         <tbody>
+                            <?php 
+                                $no = 1;
+                                foreach ($db->tampilDataKegiatan() as $data) {
+                            ?>
                         <tr>
-                            <td>1.</td>
-                            <td>Pemilu BEM</td>
-                            <td>29 November 2017</td>
-                            <td>Ruang Aula</td>
-                            <td>Disetujui</td>
+                            <td><?php echo $no++; ?></td>
+                            <td><?php echo strtoupper($data['nama_kegiatan']); ?></td>
+                            <td><?php echo $data['tanggal']; ?></td>
+                            <td><?php echo $data['ruangan']; ?></td>
+                            <td>
+                                    <?php
+                                    if ($data['status']== "Disetujui" && $data['status2'] == "Disetujui"){
+                                        echo "Disetujui";
+                                    } elseif ($data['status2'] == "Belum Disetujui"){
+                                        echo "Belum Disetujui";
+                                    } else {
+                                        echo "Ditolak";
+                                    }
+                                    ?>
+                            </td>
                         </tr>
-                        <tr>
-                            <td>2.</td>
-                            <td>HTC</td>
-                            <td>2 Desember 2017</td>
-                            <td>Ruang Aula</td>
-                            <td>Belum Disetujui</td>
-                        </tr>
-                        <tr>
-                            <td>3.</td>
-                            <td>Pertemuan Rutin</td>
-                            <td>31 November 2017</td>
-                            <td>Ruang 2</td>
-                            <td>Disetujui</td>
-                        </tr>
-                        <tr>
-                            <td>4.</td>
-                            <td>Pertemuan Rutin</td>
-                            <td>30 November 2017</td>
-                            <td>Ruang Aula</td>
-                            <td>Disetujui</td>
-                        </tr>
-                        <tr>
-                            <td>5.</td>
-                            <td>Pertemuan Rutin</td>
-                            <td>30 November 2017</td>
-                            <td>Ruang 2</td>
-                            <td>Belum Disetujui</td>
-                        </tr>
-                        <tr>
-                            <td>6.</td>
-                            <td>Pertemuan Rutin</td>
-                            <td>30 November 2017</td>
-                            <td>Ruang 5</td>
-                            <td>Disetujui</td>
-                        </tr>
-                        <tr>
-                            <td>7.</td>
-                            <td>Pertemuan Rutin</td>
-                            <td>30 November 2017</td>
-                            <td>Ruang 4</td>
-                            <td>Belum Disetujui</td>
-                        </tr>
+                        <?php } ?>
                         </tbody>
                     </table>
                 </div>
@@ -117,7 +117,7 @@
         </div>
 
     </div>
-    <div id="ruangan" style="margin: 3.3%;margin-top: 5%">
+    <!-- <div id="ruangan" style="margin: 3.3%;margin-top: 5%">
         <span class="text-center"><h1>Galeri Ruangan PIK</h1><br></span>
         <div class="panel-group">
             <div class="col-lg-6">
@@ -151,7 +151,7 @@
                 </div>
             </div>
         </div>
-        </div>
+        </div> -->
 
     <div id="sop" style="margin: 4.7%; margin-top: 3%">
         <div class="row">
@@ -182,7 +182,7 @@
         <div class="container">
             <div class="row vcenter">
                 <div class="pull-right col-lg-4 col-xs-12">
-                    <p>Copyright &copy;2016 by M Thariq Nugroho</p>
+                    <p><strong>Copyright &copy;2017 by M Thariq Nugroho / 152410101115</strong></p>
                 </div>
             </div>
         </div>

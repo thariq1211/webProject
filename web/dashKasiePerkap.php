@@ -1,3 +1,19 @@
+<?php
+session_start();
+include 'koneksi.php';
+include 'model.php';
+$db = new model;
+
+//cek apakah user sudah login
+if (!isset($_SESSION['userid'])){
+    header("location:login.php");
+}
+
+//cek level user
+if ($_SESSION['level']!="kasieperkap"){
+    die("Anda bukan Kepala Perlengkapan");
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,10 +44,10 @@
 <body>
 <nav class="navbar navbar-default" style="margin-bottom: 1px">
     <div class="navbar-header">
-        <a class="navbar-brand" href="#">LRMS</a>
+        <a class="navbar-brand" href="index.php">LRMS</a>
     </div>
     <ul class="nav navbar-nav navbar-collapse navbar-right">
-        <li class="active"><a href="index.php ">Logout <span class="glyphicon glyphicon-off"></span></a></li>
+        <li class="active"><a href="logout.php">Logout <span class="glyphicon glyphicon-off"></span></a></li>
     </ul>
 </nav>
 <div class="container-fluid">
@@ -68,94 +84,29 @@
                                 <th>Tanggal Pelaksanaan</th>
                                 <th>Ruangan yang dipinjam</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                <th style="text-align: center">Aksi</th>
                             </tr>
                             </thead>
                             <tbody>
+                            <?php
+                                $no = 1;
+                                foreach ($db->tampilDataKegiatan() as $data){
+                            ?>
                             <tr>
-                                <td>1.</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Disetujui</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+                                <td><?php echo $no++;?></td>
+                                <td><?php echo strtoupper($data['no_kegiatan']) ;?></td>
+                                <td><?php echo strtoupper($data['nama_kegiatan']);?></td>
+                                <td><?php echo $data['tanggal'];?></td>
+                                <td><?php echo $data['ruangan'];?></td>
+                                <td><?php echo $data['status'];?></td>
+                                <td style="text-align: center">
+                                    <a href="ksiePerkap.php?id=<?php echo $data['id_kegiatan']?>&aksi=setuju" class="btn btn-primary btn-xs" <?php if ($data['status']!="Belum Disetujui"){echo "disabled";} ?>>
+                                        <span class="glyphicon glyphicon-ok"></span> Setujui</a>
+                                    <a href="ksiePerkap.php?id=<?php echo $data['id_kegiatan']?>&aksi=tolak" class="btn btn-danger btn-xs" <?php if ($data['status']!="Belum Disetujui"){echo "disabled";} ?>>
+                                        <span class="glyphicon glyphicon-remove"></span> Tolak</a>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>2.</td>
-                                <td>16/BEM/d/PSSI/IX/2017</td>
-                                <td>Rasio</td>
-                                <td>30 November 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Disetujui</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3.</td>
-                                <td>16/HImasif/d/PSSI/IX/2017</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>31 November 2017</td>
-                                <td>Ruang 5</td>
-                                <td>Belum Disetujui</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4.</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Disetujui</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5.</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Disetujui</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>6.</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Disetujui</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>7.</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                                <td>Tidak Disetujui</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
-                                </td>
-                            </tr>
+                            <?php } ?>
                             </tbody>
                         </table>
                     </div>
@@ -182,76 +133,21 @@
                             </tr>
                             </thead>
                             <tbody>
+                                <?php 
+                                    $no = 1;
+                                    foreach ($db->tampilDataPeminjam() as $data) { 
+                                 ?>
                             <tr>
-                                <td>1.</td>
-                                <td>M Thariq Nugroho</td>
-                                <td>152410101115</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>UKM LAOS</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
+                                <td><?php echo $no++; ?>.</td>
+                                <td><?php echo $data['nama']; ?></td>
+                                <td><?php echo $data['nim']; ?></td>
+                                <td><?php echo strtoupper($data['no_kegiatan']); ?></td>
+                                <td><?php echo strtoupper($data['nama_ormawa']); ?></td>
+                                <td><?php echo strtoupper($data['nama_kegiatan']); ?></td>
+                                <td><?php echo $data['tanggal']; ?></td>
+                                <td><?php echo $data['ruangan']; ?></td>
                             </tr>
-                            <tr>
-                                <td>2.</td>
-                                <td>Dimas Setyo</td>
-                                <td>152410101126</td>
-                                <td>16/BEM/d/PSSI/IX/2017</td>
-                                <td>BEM</td>
-                                <td>Rasio</td>
-                                <td>30 November 2017</td>
-                                <td>Ruang Aula</td>
-                            </tr>
-                            <tr>
-                                <td>3.</td>
-                                <td>Gilang Hidayatullah</td>
-                                <td>152410101129</td>
-                                <td>16/HImasif/d/PSSI/IX/2017</td>
-                                <td>HIMASIF</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>31 November 2017</td>
-                                <td>Ruang 5</td>
-                            </tr>
-                            <tr>
-                                <td>4.</td>
-                                <td>M Thariq Nugroho</td>
-                                <td>152410101115</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>UKM LAOS</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                            </tr>
-                            <tr>
-                                <td>5.</td>
-                                <td>M Thariq Nugroho</td>
-                                <td>152410101115</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>UKM LAOS</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                            </tr>
-                            <tr>
-                                <td>6.</td>
-                                <td>M Thariq Nugroho</td>
-                                <td>152410101115</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>UKM LAOS</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                            </tr>
-                            <tr>
-                                <td>7.</td>
-                                <td>M Thariq Nugroho</td>
-                                <td>152410101115</td>
-                                <td>16/UKM-LAOS/d/PSSI/IX/2017</td>
-                                <td>UKM LAOS</td>
-                                <td>Pertemuan Rutin</td>
-                                <td>29 November 2017</td>
-                                <td>Ruang Aula</td>
-                            </tr>
+                            <?php } ?>
                             </tbody>
                         </table>
                     </div>
